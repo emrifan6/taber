@@ -67,13 +67,49 @@ class TaberModel extends Model
         return $progresgrup;
     }
 
-    public function updatesaldo($id_user, $id_grup, $saldo)
+    public function getid_grup($order_id)
     {
-        dd($id_user);
+        // dd($order_id);
+        $db = \Config\Database::connect();
+        $builder = $db->table('transactions');
+        $builder->select('id_grup');
+        $query = $builder->getWhere(['order_id' => $order_id]);
+        $query = $query->getRow('id_grup');
+        // dd($query);
+        return $query;
+    }
+
+    public function getstatus_code($order_id)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('transactions');
+        $builder->select('status_code');
+        $query = $builder->getWhere(['order_id' => $order_id]);
+        $query = $query->getRow('status_code');
+        // dd($query);
+        return $query;
+    }
+
+    public function updatesaldo($id_user, $id_grup, $nominal)
+    {
         $db = \Config\Database::connect();
         $builder = $db->table('users');
         $builder->select('grup1, grup2, grup3, saldo_grup1, saldo_grup2, saldo_grup3');
-        $query = $builder->get();
-        dd($query);
+        $query = $builder->getWhere(['id' => $id_user]);
+        // dd($id_grup);
+        // dd($query->getRow('grup1'));
+        if ($query->getRow('grup1') == $id_grup) {
+            // dd('grup1');
+            $sql = 'UPDATE users SET saldo_grup1 = saldo_grup1 + ? where id = ?';
+            $db->query($sql, [$nominal, $id_user]);
+        } else if ($query->getRow('grup2') == $id_grup) {
+            // dd('grup2');
+            $sql = 'UPDATE users SET saldo_grup2 = saldo_grup2 + ? where id = ?';
+            $db->query($sql, [$nominal, $id_user]);
+        } else if ($query->getRow('grup3') == $id_grup) {
+            // dd('grup3');
+            $sql = 'UPDATE users SET saldo_grup3 = saldo_grup3 + ? where id = ?';
+            $db->query($sql, [$nominal, $id_user]);
+        }
     }
 }

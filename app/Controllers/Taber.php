@@ -41,7 +41,7 @@ class Taber extends BaseController
 		$grup1 = $grupquery->getRow('grup1');
 		$grup2 = $grupquery->getRow('grup2');
 		$grup3 = $grupquery->getRow('grup3');
-		//dd($grup2);
+		// dd($grup3);
 		//query cek tagihan
 		// SELECT IF (akhir_menabung <= CURRENT_DATE(), u.saldo_grup1 - ((TIMESTAMPDIFF(day, DATE(g.awal_menabung), DATE(g.akhir_menabung)) div g.periode_setoran) * g.jumlah_setoran), u.saldo_grup1 - ((TIMESTAMPDIFF(day, DATE(g.awal_menabung), CURDATE()) div g.periode_setoran) * g.jumlah_setoran) ) AS tagihan FROM groups AS g, users AS u WHERE g.id = 24 AND u.id = 2
 		// $sqltagihan = "SELECT *, TIMESTAMPDIFF(day, DATE(awal_menabung), CURDATE()) AS DateDiff FROM groups WHERE id = ?";
@@ -73,6 +73,7 @@ class Taber extends BaseController
 			$namagrup2 = $tmp->getRow('nama_grup');
 			$tmptagihan =  $tmp->getRow('tagihan');
 			$tagihan2 = intval($tmptagihan);
+			// dd($tagihan2);
 			// cek tagihan minus atau plus
 			if ($tagihan2 >= 0) {
 				$tagihan2 = null;
@@ -90,6 +91,7 @@ class Taber extends BaseController
 			$namagrup3 = $tmp->getRow('nama_grup');
 			$tmptagihan =  $tmp->getRow('tagihan');
 			$tagihan3 = intval($tmptagihan);
+			dd($tagihan3);
 			// cek tagihan minus atau plus
 			if ($tagihan3 >= 0) {
 				$tagihan3 = null;
@@ -134,11 +136,18 @@ class Taber extends BaseController
 
 		// AWAL CEK DATA API MIDTRANS
 		// cek apakah ada transaksi
-		if (!empty($data_trans)) {
+		$sql = "SELECT * FROM transactions WHERE id_user = ? AND status_code != 200 LIMIT 10";
+		$querytransc = $db->query($sql, [$user_id]);
+		if ($querytransc->getNumRows() > 0) {
+			$data_transc = $querytransc->getresult();
+		} else {
+			$data_transc = null;
+		}
+		if (!empty($data_transc)) {
 			// mengambil semua order_id dari user
 			$order_id = array();
 			// $idgruptrans = array();
-			foreach ($data_trans as $j) {
+			foreach ($data_transc as $j) {
 				$temp = json_decode(json_encode($j), true);
 				array_push($order_id, $temp['order_id']);
 				// array_push($idgruptrans, $temp['id_grup']);
@@ -171,7 +180,6 @@ class Taber extends BaseController
 			}
 
 			$builder = $db->table('transactions');
-			$userbuilder = $db->table('users');
 			foreach ($api_response as $ar) {
 				$tmp = json_decode($ar, true);
 				$order_ids = $tmp['order_id'];
@@ -181,22 +189,15 @@ class Taber extends BaseController
 					'transaction_status' => $tmp['transaction_status'],
 					'fraud_status' => $tmp['fraud_status']
 				];
-				$builder->select('id_grup');
-				$builder->getWhere(['order_id' => $order_ids]);
-				$idgrup = $builder->get();
-				$idgrup = $idgrup->getRow('id_grup');
-				$this->tabermodel->updatesaldo($user_id, $idgrup, $tmp['gross_amount']);
-				$query = $builder->get();
-				$builder->select('id_grup');
-				// dd($tmp['order_id']);
-				$idgrup = $builder->getWhere(['order_id' => $tmp['order_id']]);
-				// dd($idgrup->getRow('id_grup'));
-
+				$status_code =  $this->tabermodel->getstatus_code($order_ids);
+				// dd($order_ids, $status_code, $tmp['status_code']);
+				if ($status_code == "201" and $tmp['status_code'] == "200") {
+					$id_grup = $this->tabermodel->getid_grup($order_ids);
+					$this->tabermodel->updatesaldo($user_id, $id_grup, $tmp['gross_amount']);
+				}
 				$builder->where('order_id', $order_ids);
 				$builder->update($data_api);
 			}
-
-			// dd($api_response);
 		}
 
 
@@ -416,7 +417,6 @@ class Taber extends BaseController
 
 	public function terima($id)
 	{
-
 		$db = \Config\Database::connect();
 		$sql = "SELECT u.username, g.nama_grup, jg.id_user, jg.id_grup FROM users as u 
 		JOIN  joingrup as jg ON jg.id = ?
