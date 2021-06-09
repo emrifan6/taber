@@ -66,4 +66,14 @@ class TaberModel extends Model
         $progresgrup = $saldototalgrup / ($targettabungan * count($saldoanggota));
         return $progresgrup;
     }
+
+    public function updatesaldo($id_user, $id_grup, $saldo)
+    {
+        dd($id_user);
+        $db = \Config\Database::connect();
+        $builder = $db->table('users');
+        $builder->select('grup1, grup2, grup3, saldo_grup1, saldo_grup2, saldo_grup3');
+        $query = $builder->get();
+        dd($query);
+    }
 }

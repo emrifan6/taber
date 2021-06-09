@@ -31,6 +31,9 @@ class snap extends BaseController
 	 */
 	protected $tabermodel;
 
+	// var $id_grup = null;
+
+
 	public function __construct()
 	{
 		$this->tabermodel  = new TaberModel();
@@ -50,18 +53,17 @@ class snap extends BaseController
 		// $mitrans->helper('url');
 	}
 
-
-
 	public function index($nominal, $idgrup)
 	{
-
+		session()->set('id_grup', $idgrup);
+		// $this->id_grup = $idgrup;
 		$data = [
 			'title' => 'BAYAR TABUNGAN',
 			'nominal' => $nominal,
 			'namagrup' => $this->tabermodel->getgrname($idgrup),
 			'idgrup'  => $idgrup
 		];
-
+		// dd($_SESSION['id_grup']);
 		return view('checkout_snap', $data);
 	}
 
@@ -82,6 +84,8 @@ class snap extends BaseController
 			'name' => $this->tabermodel->getgrname($idgrup)
 			// 
 		);
+
+		// dd($this->id_grup);
 
 
 
@@ -129,7 +133,7 @@ class snap extends BaseController
 		$custom_expiry = array(
 			'start_time' => date("Y-m-d H:i:s O", $time),
 			'unit' => 'minute',
-			'duration'  => 2
+			'duration'  => 1440
 		);
 
 		$transaction_data = array(
@@ -149,9 +153,42 @@ class snap extends BaseController
 
 	public function finish()
 	{
-		$result = json_decode($this->input->post('result_data'));
-		echo 'RESULT <br><pre>';
-		var_dump($result);
-		echo '</pre>';
+		// mendapatkan data json dari midtrans lewat method POST dan konversi ke array
+		$result = json_decode($this->request->getVar('result_data'), true);
+
+		$slq = "INSERT INTO `transaction` (`id`, `status_code`, `status_message`, `transaction_id`, 
+		`order_id`, `gross_amount`, `payment_type`, `transaction_time`, `transaction_status`, 
+		`va_numbers`, `bank`, `fraud_status`, `timestamp`) 
+		VALUES (NULL, '201', 'Success, transaction is found', '83e23b20-9c07-4909-8286-99865831413d', 
+		'872371166', '8000', 'bank_transfer', '2021-06-08 11:47:51', 'pending', '44240852593', 
+		'bca', 'accept', current_timestamp())";
+
+		$id_user = user_id();
+		// dd($_SESSION['id_grup']);
+		$id_grup = $_SESSION['id_grup'];
+
+		$data = [
+			'id' => null,
+			'id_user' => $id_user,
+			'id_grup' => $id_grup,
+			'status_code' => $result['status_code'],
+			'status_message' => $result['status_message'],
+			'transaction_id' => $result['transaction_id'],
+			'order_id' => $result['order_id'],
+			'gross_amount' => $result['gross_amount'],
+			'payment_type' => $result['payment_type'],
+			'transaction_time' => $result['transaction_time'],
+			'transaction_status' => $result['transaction_status'],
+			'va_number' => $result['va_numbers'][0]['va_number'],
+			'bank' => $result['va_numbers'][0]['bank'],
+			'fraud_status' => $result['fraud_status']
+		];
+
+		// var_dump($result);
+		// dd($data);
+		$db = \Config\Database::connect();
+		$query = $db->table('transactions')->insert($data);
+		// dd($query);
+		return redirect()->to('/taber');
 	}
 }

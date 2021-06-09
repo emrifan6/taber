@@ -37,6 +37,7 @@ $routes->get('/contact', 'Home::contact');
 $routes->get('/taber', 'Taber::index');
 // $routes->get('/midtrans', 'snap::index');
 // $routes->get('/taber/midtrans', 'snap::index/$1/$2');
+// $routes->post('/snap/finish', 'snap::finish');
 $routes->get('/taber/grup', 'Taber::grup');
 $routes->get('/taber/grup/create', 'Taber::create');
 $routes->get('/taber/terima/(:segment)', 'Taber::terima/$1');

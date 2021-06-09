@@ -7,7 +7,7 @@
 </form>
 
 <!-- <button id="pay-button">Pay!</button> -->
-<form method="get" action="/taber/grup">
+<form method="get" action="/taber">
   <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
 

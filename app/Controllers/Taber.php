@@ -17,6 +17,7 @@ class Taber extends BaseController
 		$this->tabermodel  = new TaberModel();
 	}
 
+
 	public function index()
 	{
 		// Awal Cek permintaan gabung grup
@@ -112,13 +113,110 @@ class Taber extends BaseController
 			$tagihangrup = array('tagihan' => $tagihan3, 'nama_grup' => $namagrup3, 'id_grup' => $grup3);
 			array_push($datatagihan, $tagihangrup);
 		}
-
 		// dd($datatagihan);
 		// AKHIR CEK TAGIHAN
+
+
+
+		// AWAL CEK TRANSAKSI
+
+		$transsql = "SELECT * FROM transactions WHERE id_user = ? LIMIT 10";
+		$transquery = $db->query($transsql, [$user_id]);
+		if ($transquery->getNumRows() > 0) {
+			$data_trans = $transquery->getresult();
+		} else {
+			$data_trans = null;
+		}
+		// dd($data_trans);
+
+		// AKHIR CEK TRANSAKSI
+
+
+		// AWAL CEK DATA API MIDTRANS
+		// cek apakah ada transaksi
+		if (!empty($data_trans)) {
+			// mengambil semua order_id dari user
+			$order_id = array();
+			// $idgruptrans = array();
+			foreach ($data_trans as $j) {
+				$temp = json_decode(json_encode($j), true);
+				array_push($order_id, $temp['order_id']);
+				// array_push($idgruptrans, $temp['id_grup']);
+			}
+			// dd($idgruptrans);
+
+			// dd($order_id);
+			$api_response = array();
+			foreach ($order_id as $k) {
+				$curl = curl_init();
+				curl_setopt_array($curl, array(
+					CURLOPT_URL => 'https://api.sandbox.midtrans.com/v2/' . $k . '/status',
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_ENCODING => '',
+					CURLOPT_MAXREDIRS => 10,
+					CURLOPT_TIMEOUT => 0,
+					CURLOPT_FOLLOWLOCATION => true,
+					CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+					CURLOPT_CUSTOMREQUEST => 'GET',
+					CURLOPT_HTTPHEADER => array(
+						'Accept: application/json',
+						'Content-Type: application/json',
+						'Authorization: Basic U0ItTWlkLXNlcnZlci01X0pPX0FSTEpBUm13cnZBT0ZPVklGMXU6'
+					),
+				));
+				$response = curl_exec($curl);
+				curl_close($curl);
+				$data_api = json_decode(json_encode($response), true);
+				array_push($api_response, $data_api);
+			}
+
+			$builder = $db->table('transactions');
+			$userbuilder = $db->table('users');
+			foreach ($api_response as $ar) {
+				$tmp = json_decode($ar, true);
+				$order_ids = $tmp['order_id'];
+				$data_api = [
+					'status_code' => $tmp['status_code'],
+					'status_message' => $tmp['status_message'],
+					'transaction_status' => $tmp['transaction_status'],
+					'fraud_status' => $tmp['fraud_status']
+				];
+				$builder->select('id_grup');
+				$builder->getWhere(['order_id' => $order_ids]);
+				$idgrup = $builder->get();
+				$idgrup = $idgrup->getRow('id_grup');
+				$this->tabermodel->updatesaldo($user_id, $idgrup, $tmp['gross_amount']);
+				$query = $builder->get();
+				$builder->select('id_grup');
+				// dd($tmp['order_id']);
+				$idgrup = $builder->getWhere(['order_id' => $tmp['order_id']]);
+				// dd($idgrup->getRow('id_grup'));
+
+				$builder->where('order_id', $order_ids);
+				$builder->update($data_api);
+			}
+
+			// dd($api_response);
+		}
+
+
+		// UPDATE DATABASE BERDASARKAN API MIDTRANS
+
+
+
+
+
+
+
+		// AKHIR CEK DATA API MIDTRANS
+
+
+
 		$data = [
 			'title' => 'Tabungan Bersama',
 			'join_req' => $join_req,
-			'tagihan' => $datatagihan
+			'tagihan' => $datatagihan,
+			'transaksi' => $data_trans
 		];
 
 		// dd($data);
