@@ -501,7 +501,7 @@ class Taber extends BaseController
 
 	public function keluargrup()
 	{
-		dd();
+		// dd();
 		// $this->request->getPost();
 		$grup_id = $this->request->getVar('id_grup');
 		$granggota = $this->tabermodel->getgrmember($grup_id);
