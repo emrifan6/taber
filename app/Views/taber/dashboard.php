@@ -94,10 +94,14 @@
                         <th scope="col">Nominal</th>
                         <th scope="col">Grup</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Bank</th>
+                        <th scope="col">VA</th>
+                        <th scope="col">Metode</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $i = 1; ?>
+
                     <?php foreach ($transaksi as $r) : ?>
                         <?php $w = json_decode(json_encode($r), true); ?>
                         <tr>
@@ -105,6 +109,9 @@
                             <td><?= $w['gross_amount']; ?></td>
                             <td><?= $w['id_grup']; ?></td>
                             <td><?= $w['transaction_status']; ?></td>
+                            <td><?= strtoupper($w['bank']); ?></td>
+                            <td><?= $w['va_number']; ?></td>
+                            <td><?= $w['payment_type']; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

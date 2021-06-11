@@ -91,7 +91,7 @@ class Taber extends BaseController
 			$namagrup3 = $tmp->getRow('nama_grup');
 			$tmptagihan =  $tmp->getRow('tagihan');
 			$tagihan3 = intval($tmptagihan);
-			dd($tagihan3);
+			// dd($tagihan3);
 			// cek tagihan minus atau plus
 			if ($tagihan3 >= 0) {
 				$tagihan3 = null;
@@ -122,7 +122,7 @@ class Taber extends BaseController
 
 		// AWAL CEK TRANSAKSI
 
-		$transsql = "SELECT * FROM transactions WHERE id_user = ? LIMIT 10";
+		$transsql = "SELECT * FROM transactions WHERE id_user = ? ORDER BY transaction_time DESC LIMIT 10";
 		$transquery = $db->query($transsql, [$user_id]);
 		if ($transquery->getNumRows() > 0) {
 			$data_trans = $transquery->getresult();

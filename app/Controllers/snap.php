@@ -154,7 +154,9 @@ class snap extends BaseController
 	public function finish()
 	{
 		// mendapatkan data json dari midtrans lewat method POST dan konversi ke array
+		// dd($this->request->getVar('result_data'));
 		$result = json_decode($this->request->getVar('result_data'), true);
+
 
 		$slq = "INSERT INTO `transaction` (`id`, `status_code`, `status_message`, `transaction_id`, 
 		`order_id`, `gross_amount`, `payment_type`, `transaction_time`, `transaction_status`, 
@@ -167,22 +169,43 @@ class snap extends BaseController
 		// dd($_SESSION['id_grup']);
 		$id_grup = $_SESSION['id_grup'];
 
-		$data = [
-			'id' => null,
-			'id_user' => $id_user,
-			'id_grup' => $id_grup,
-			'status_code' => $result['status_code'],
-			'status_message' => $result['status_message'],
-			'transaction_id' => $result['transaction_id'],
-			'order_id' => $result['order_id'],
-			'gross_amount' => $result['gross_amount'],
-			'payment_type' => $result['payment_type'],
-			'transaction_time' => $result['transaction_time'],
-			'transaction_status' => $result['transaction_status'],
-			'va_number' => $result['va_numbers'][0]['va_number'],
-			'bank' => $result['va_numbers'][0]['bank'],
-			'fraud_status' => $result['fraud_status']
-		];
+		$payment_type = $result['payment_type'];
+
+		if ($payment_type == 'qris' or $payment_type == 'gopay') {
+			$data = [
+				'id' => null,
+				'id_user' => $id_user,
+				'id_grup' => $id_grup,
+				'status_code' => $result['status_code'],
+				'status_message' => $result['status_message'],
+				'transaction_id' => $result['transaction_id'],
+				'order_id' => $result['order_id'],
+				'gross_amount' => $result['gross_amount'],
+				'payment_type' => $result['payment_type'],
+				'transaction_time' => $result['transaction_time'],
+				'transaction_status' => $result['transaction_status'],
+				'va_number' => null,
+				'bank' => $payment_type,
+				'fraud_status' => $result['fraud_status']
+			];
+		} else if ($payment_type == 'bank_transfer') {
+			$data = [
+				'id' => null,
+				'id_user' => $id_user,
+				'id_grup' => $id_grup,
+				'status_code' => $result['status_code'],
+				'status_message' => $result['status_message'],
+				'transaction_id' => $result['transaction_id'],
+				'order_id' => $result['order_id'],
+				'gross_amount' => $result['gross_amount'],
+				'payment_type' => $result['payment_type'],
+				'transaction_time' => $result['transaction_time'],
+				'transaction_status' => $result['transaction_status'],
+				'va_number' => $result['va_numbers'][0]['va_number'],
+				'bank' => $result['va_numbers'][0]['bank'],
+				'fraud_status' => $result['fraud_status']
+			];
+		}
 
 		// var_dump($result);
 		// dd($data);
