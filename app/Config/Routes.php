@@ -39,6 +39,8 @@ $routes->get('/taber', 'Taber::index');
 // $routes->get('/taber/midtrans', 'snap::index/$1/$2');
 // $routes->post('/snap/finish', 'snap::finish');
 $routes->get('/taber/grup', 'Taber::grup');
+$routes->get('/taber/saldo', 'Taber::saldo');
+$routes->get('/taber/keluargrup', 'Taber::keluargrup');
 $routes->get('/taber/grup/create', 'Taber::create');
 $routes->get('/taber/terima/(:segment)', 'Taber::terima/$1');
 $routes->get('/taber/tolak/(:segment)', 'Taber::tolak/$1');

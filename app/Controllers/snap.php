@@ -15,6 +15,13 @@ class snap extends BaseController
 {
 
 	/**
+	 * Instance of the main Request object.
+	 *
+	 * @var HTTP\IncomingRequest
+	 */
+	protected $request;
+
+	/**
 	 * Index Page for this controller.
 	 *
 	 * Maps to the following URL

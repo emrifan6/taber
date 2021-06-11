@@ -112,4 +112,76 @@ class TaberModel extends Model
             $db->query($sql, [$nominal, $id_user]);
         }
     }
+
+    public function getsaldo()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('users');
+        $builder->select('grup1, grup2, grup3, saldo_grup1, saldo_grup2, saldo_grup3, saldo');
+        $query = $builder->getWhere(['id' => user_id()]);
+        // dd($query->getResult());
+        return $query->getFirstRow();
+    }
+
+    public function getgrmember($grup_id)
+    {
+        // mendapatkan semua id dari member grup
+        $db = \Config\Database::connect();
+        $builder = $db->table('users');
+        $builder->select('id');
+        $where = "grup1 = $grup_id OR grup2 = $grup_id OR grup3 = $grup_id ";
+        $query = $builder->where($where);
+        $query = $builder->get();
+        return $query->getResult('array');
+    }
+
+    public function setgrinactive($grup_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE groups SET status = inactive where id = ?';
+        $db->query($sql, [$grup_id]);
+    }
+
+    public function setpindahsaldo($grup_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE users SET saldo = 
+        IF(grup1 = ?, saldo+saldo_grup1, 
+           IF(grup2 = ?, saldo+saldo_grup2, 
+              IF(grup3 = ?, saldo+saldo_grup3, saldo))),
+        saldo_grup1 = IF(grup1 = ?, 0, saldo_grup1),
+        saldo_grup2 = IF(grup2 = ?, 0, saldo_grup2),
+        saldo_grup3 = IF(grup3 = ?, 0, saldo_grup3),
+        grup1 = IF(grup1 = ?, null, grup1),
+        grup2 = IF(grup2 = ?, null, grup2),
+        grup3 = IF(grup3 = ?, null, grup3)
+        WHERE id = ?';
+        $db->query($sql, [$grup_id, $grup_id, $grup_id, $grup_id, $grup_id, $grup_id, $grup_id, $grup_id, $grup_id, user_id()]);
+    }
+
+    public function getcheckketua($grup_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'SELECT id_ketua FROM groups WHERE id = ?';
+        $ketua = $db->query($sql, [$grup_id]);
+        $ketua = $ketua->getRow('id_ketua');
+        if ($ketua == user_id()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function setgrketua($grup_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE groups SET id_ketua = ? WHERE id = ?';
+        $anggota = $this->getgrmember($grup_id);
+        foreach ($anggota as $ag) {
+            if ($ag['id'] != user_id()) {
+                $db->query($sql, [$ag['id'], $grup_id]);
+                break;
+            }
+        }
+    }
 }

@@ -11,6 +11,13 @@ use function PHPUnit\Framework\isNull;
 
 class Taber extends BaseController
 {
+	/**
+	 * Instance of the main Request object.
+	 *
+	 * @var HTTP\IncomingRequest
+	 */
+	protected $request;
+
 	protected $tabermodel;
 	public function __construct()
 	{
@@ -126,10 +133,21 @@ class Taber extends BaseController
 		$transquery = $db->query($transsql, [$user_id]);
 		if ($transquery->getNumRows() > 0) {
 			$data_trans = $transquery->getresult();
+			// MENGGANTI KOLOM id_grup MENJADI NAMA GRUP
+			$arr_data_trans = array();
+			foreach ($data_trans as $dt) {
+				$tmp = json_decode(json_encode($dt), true);
+				$tmp['id_grup'] = $this->tabermodel->getgrname($tmp['id_grup']);
+				array_push($arr_data_trans, $tmp);
+				// dd($tmp);
+			}
+			$data_trans = $arr_data_trans;
+			// dd($arr_data_trans);
 		} else {
 			$data_trans = null;
 		}
 		// dd($data_trans);
+
 
 		// AKHIR CEK TRANSAKSI
 
@@ -200,19 +218,6 @@ class Taber extends BaseController
 			}
 		}
 
-
-		// UPDATE DATABASE BERDASARKAN API MIDTRANS
-
-
-
-
-
-
-
-		// AKHIR CEK DATA API MIDTRANS
-
-
-
 		$data = [
 			'title' => 'Tabungan Bersama',
 			'join_req' => $join_req,
@@ -246,7 +251,7 @@ class Taber extends BaseController
 		} else {
 			$x = 1;
 			foreach ($grups as $k) {
-				$sql = "SELECT * FROM groups WHERE id = ?";
+				$sql = "SELECT * FROM groups WHERE id = ? AND status = 'active'";
 				$grupsquery = $db->query($sql, [$k]);
 				$tmp =  $grupsquery->getRow();
 				if (!empty($tmp)) {
@@ -465,6 +470,50 @@ class Taber extends BaseController
 
 	public function bayar($nominal, $id_grup)
 	{
+		// FUNGSI INI SUDAH DIGANTIKAN OLEH CONTROLLER SNAP
 		// dd($nominal);
+	}
+
+	public function saldo()
+	{
+		$saldo = $this->tabermodel->getsaldo();
+		$saldo = json_decode(json_encode($saldo), true);
+		// dd($saldo);
+		// MENGGANTI KOLOM id_grup MENJADI NAMA GRUP
+		if ($saldo['grup1'] != null) {
+			$saldo['grup1'] = $this->tabermodel->getgrname($saldo['grup1']);
+		}
+		if ($saldo['grup2'] != null) {
+			$saldo['grup2'] = $this->tabermodel->getgrname($saldo['grup2']);
+		}
+		if ($saldo['grup3'] != null) {
+			$saldo['grup3'] = $this->tabermodel->getgrname($saldo['grup3']);
+		}
+
+		// dd($saldo);
+
+		$data = [
+			'title' => 'Saldo',
+			'saldo' => $saldo
+		];
+		return view('taber/saldo', $data);
+	}
+
+	public function keluargrup()
+	{
+		// $this->request->getPost();
+		$grup_id = $this->request->getVar('id_grup');
+		$granggota = $this->tabermodel->getgrmember($grup_id);
+		// cek berapa banyak anggota grup
+		if (count($granggota) == 1) {
+			$this->tabermodel->setgrinactive($grup_id);
+			$this->tabermodel->setpindahsaldo($grup_id);
+		} else if (count($granggota) > 1) {
+			if ($this->tabermodel->getcheckketua($grup_id)) {
+				$this->tabermodel->setgrketua($grup_id);
+			}
+			$this->tabermodel->setpindahsaldo($grup_id);
+		}
+		return redirect()->to('/taber/grup');
 	}
 }

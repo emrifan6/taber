@@ -6,8 +6,9 @@
         <?= session()->getFlashdata('pesan'); ?>
     </div>
 <?php endif ?>
-<div class="container mt-4">
+<div class="container mt-4 ">
     <div class="row">
+        <!-- AWAL MENU GRUP MENABUNG -->
         <div class="col">
             <div class="card" style="width:400px">
                 <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width:100%">
@@ -16,6 +17,20 @@
                 </div>
             </div>
         </div>
+        <!--AKHIR MENU GRUP MENABUNG -->
+        <!-- AWAL MENU SALDO MENABUNG -->
+        <div class="col">
+            <div class="card" style="width:400px">
+                <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width:100%">
+                <div class="card-body">
+                    <a href=" <?= base_url('/taber/saldo'); ?>" class="btn btn-primary">SALDO TABUNGAN</a>
+                </div>
+            </div>
+        </div>
+        <!--AKHIR MENU SALDO MENABUNG -->
+    </div>
+
+    <div class="row">
         <!-- AWAL CEK PERMINTAAN GABUNG GRUP -->
         <div class="col">
             <?php if (!empty($join_req)) : ?>
@@ -49,6 +64,7 @@
         </div>
         <!-- AKHIR CEK PERMINTAAN GABUNG GRUP -->
     </div>
+
     <!-- AWAL CEK TAGIHAN -->
     <div class="row">
         <?php if (!empty($tagihan)) : ?>
@@ -101,17 +117,15 @@
                 </thead>
                 <tbody>
                     <?php $i = 1; ?>
-
                     <?php foreach ($transaksi as $r) : ?>
-                        <?php $w = json_decode(json_encode($r), true); ?>
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
-                            <td><?= $w['gross_amount']; ?></td>
-                            <td><?= $w['id_grup']; ?></td>
-                            <td><?= $w['transaction_status']; ?></td>
-                            <td><?= strtoupper($w['bank']); ?></td>
-                            <td><?= $w['va_number']; ?></td>
-                            <td><?= $w['payment_type']; ?></td>
+                            <td><?= $r['gross_amount']; ?></td>
+                            <td><?= $r['id_grup']; ?></td>
+                            <td><?= $r['transaction_status']; ?></td>
+                            <td><?= strtoupper($r['bank']); ?></td>
+                            <td><?= $r['va_number']; ?></td>
+                            <td><?= $r['payment_type']; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
