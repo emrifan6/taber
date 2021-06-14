@@ -138,7 +138,7 @@ class TaberModel extends Model
     public function setgrinactive($grup_id)
     {
         $db = \Config\Database::connect();
-        $sql = 'UPDATE groups SET status = inactive where id = ?';
+        $sql = 'UPDATE groups SET status = "inactive" where id = ?';
         $db->query($sql, [$grup_id]);
     }
 
@@ -183,5 +183,145 @@ class TaberModel extends Model
                 break;
             }
         }
+    }
+
+    public function getbanklist()
+    {
+        // mendapatkan semua id dari member grup
+        $db = \Config\Database::connect();
+        $builder = $db->table('bank_list');
+        $builder->select('id, bank_code, bank_name');
+        $builder->orderBy('bank_code', 'ASC');
+        $query = $builder->get();
+        // dd($query->getResult('array'));
+        return $query->getResult('array');
+    }
+
+    public function getpayoutnominalpending()
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $sql = 'SELECT SUM(nominal) AS nominal_pending FROM payout_transactions WHERE id_user = ? AND status = "pending"';
+        $nominal_pending = $db->query($sql, [$user_id]);
+        $nominal_pending = $nominal_pending->getRow('nominal_pending');
+        return $nominal_pending;
+        // dd($nominal_pending);
+    }
+
+    public function getchecknomialpayout($nominal)
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $builder = $db->table('users');
+        $builder->select('saldo');
+        // $where = "id = $user_id";
+        $query = $builder->where('id', $user_id);
+        $query = $builder->get();
+        $saldo = $query->getRow('saldo');
+        $nominal_pending = $this->getpayoutnominalpending();
+        $saldo_pending = $saldo - $nominal_pending;
+        if ((int)$nominal <= (int)$saldo_pending) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getbankcode($bank_name)
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('bank_list');
+        $builder->select('bank_code, bank_name');
+        $query = $builder->where('bank_name', $bank_name);
+        $query = $builder->get();
+        $query = $query->getResult();
+        dd($query);
+        return $query;
+    }
+
+    public function setpayouttransactions($nominal, $bank_name, $rekening, $nama)
+    {
+        // $bank_code = $this->getbankcode($bank_name);
+        // dd($bank_code);
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $builder = $db->table('payout_transactions');
+        $data = [
+            'id_user' => $user_id,
+            'bank_code'  => $bank_name,
+            'rekening'  => $rekening,
+            'nominal' => $nominal,
+            'nama' => strtoupper($nama),
+            'status' => 'pending',
+            'transaction_time' => date("Y-m-d H:i:s")
+        ];
+        $builder->insert($data);
+    }
+
+    public function getpayouttransactions()
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $sql = 'SELECT * FROM payout_transactions WHERE id_user = ? ORDER BY transaction_time DESC LIMIT 10';
+        $query = $db->query($sql, [$user_id]);
+        $query = $query->getResult('array');
+        // dd($query);
+        return $query;
+    }
+
+    public function getcheckadmin()
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $sql = 'SELECT hakakses FROM users WHERE id = ?';
+        $query = $db->query($sql, [$user_id]);
+        $query = $query->getRow('hakakses');
+        if ($query = 'admin') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function getadminpayoutrequet()
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $sql = 'SELECT * FROM payout_transactions WHERE status = "pending"  ORDER BY transaction_time';
+        $query = $db->query($sql);
+        $query = $query->getResult('array');
+        // dd($query);
+        return $query;
+    }
+
+    public function setsaldo($payout_nominal)
+    {
+        $user_id = user_id();
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE users SET saldo = saldo - ? where id = ?';
+        $query = $db->query($sql, [$payout_nominal, $user_id]);
+    }
+
+    public function setadminbayar($payout_id)
+    {
+        $time_now = date("Y-m-d H:i:s");
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE payout_transactions SET status = "settlement", payout_time = ? where id = ?';
+        $db->query($sql, [$time_now, $payout_id]);
+    }
+    public function setadmintolak($payout_id)
+    {
+        $time_now = date("Y-m-d H:i:s");
+        $db = \Config\Database::connect();
+        $sql = 'UPDATE payout_transactions SET status = "failed", payout_time = ? where id = ?';
+        $db->query($sql, [$time_now, $payout_id]);
+    }
+    public function getpayoutnominal($payout_id)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'SELECT nominal FROM payout_transactions WHERE id = ?';
+        $query = $db->query($sql, [$payout_id]);
+        $query = $query->getRow('nominal');
+        return $query;
     }
 }

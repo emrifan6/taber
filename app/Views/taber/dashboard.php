@@ -6,28 +6,34 @@
         <?= session()->getFlashdata('pesan'); ?>
     </div>
 <?php endif ?>
-<div class="container mt-4 ">
+<div class="container mt-4">
     <div class="row">
         <!-- AWAL MENU GRUP MENABUNG -->
-        <div class="col">
-            <div class="card" style="width:400px">
-                <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width:100%">
-                <div class="card-body">
-                    <a href=" <?= base_url('/taber/grup'); ?>" class="btn btn-primary">GRUP MENABUNG</a>
-                </div>
+        <div class="card col" style="width: 200px">
+            <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width: 100%" />
+            <div class="card-body">
+                <a href=" <?= base_url('/taber/grup'); ?>" class="btn btn-primary">GRUP MENABUNG</a>
             </div>
         </div>
         <!--AKHIR MENU GRUP MENABUNG -->
+
         <!-- AWAL MENU SALDO MENABUNG -->
-        <div class="col">
-            <div class="card" style="width:400px">
-                <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width:100%">
-                <div class="card-body">
-                    <a href=" <?= base_url('/taber/saldo'); ?>" class="btn btn-primary">SALDO TABUNGAN</a>
-                </div>
+        <div class="card col" style="width: 200px">
+            <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width: 100%" />
+            <div class="card-body">
+                <a href=" <?= base_url('/taber/saldo'); ?>" class="btn btn-primary">SALDO TABUNGAN</a>
             </div>
         </div>
         <!--AKHIR MENU SALDO MENABUNG -->
+
+        <!-- AWAL MENU TARIK UANG TABUNGAN -->
+        <div class="card col" style="width: 200px">
+            <img class="card-img-top" src="https://img.freepik.com/free-vector/group-people-illustration-set_52683-33806.jpg" alt="Card image" style="width: 100%" />
+            <div class="card-body">
+                <a href=" <?= base_url('/taber/payout'); ?>" class="btn btn-primary">TARIK UANG TABUNGAN</a>
+            </div>
+        </div>
+        <!-- AWAL MENU TARIK UANG TABUNGAN -->
     </div>
 
     <div class="row">
@@ -97,9 +103,7 @@
     </div>
     <!-- AKHIR CEK TAGIHAN -->
 
-
     <!-- CEK TRANSAKSI -->
-
     <div class="row">
         <?php if (!empty($transaksi)) : ?>
             <h3>DAFTAR TRANSAKSI</h3>
@@ -132,11 +136,7 @@
             </table>
         <?php endif ?>
     </div>
-
     <!-- AKHIR CEK TRANSAKSI -->
 
-
-
-
-
     <?= $this->endSection('content'); ?>
+</div>

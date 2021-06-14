@@ -517,4 +517,80 @@ class Taber extends BaseController
 		}
 		return redirect()->to('/taber/grup');
 	}
+
+	public function payout()
+	{
+		// $this->tabermodel->nominalpending();
+		$bank = $this->tabermodel->getbanklist();
+		$saldo = $this->tabermodel->getsaldo();
+		$saldo = json_decode(json_encode($saldo), true);
+		$payout_pending = $this->tabermodel->getpayoutnominalpending();
+		$saldo_pending = $saldo['saldo'] - $payout_pending;
+		$transaksi = $this->tabermodel->getpayouttransactions();
+		// dd($saldo);
+		$data = [
+			'title' => 'Tarik uang tabungan',
+			'bank' => $bank,
+			'saldo' => $saldo_pending,
+			'transaksi' => $transaksi
+		];
+		return view('taber/payout', $data);
+	}
+
+	public function payoutrequest()
+	{
+		$nominal = $this->request->getVar('payout_nominal');
+		$bank_name = $this->request->getVar('bank_name');
+		$rekening = $this->request->getVar('nomor_rekening');
+		$nama = $this->request->getVar('nama_pemilik_rekening');
+		// dd($this->tabermodel->getbankcode($bank_name));
+		// dd($nominal, $bank_name, $rekening, $nama);
+		$check_nomial = $this->tabermodel->getchecknomialpayout($nominal);
+		// dd($check_nomial);
+		if ($check_nomial) {
+			$this->tabermodel->setpayouttransactions($nominal, $bank_name, $rekening, $nama);
+			session()->setFlashdata('pesan', 'Permintaan tarik tabungan sebesar Rp. ' . $nominal . ' berhasil dibuat');
+		} else {
+			session()->setFlashdata('pesan', 'Permintaan tarik tabungan sebesar Rp. ' . $nominal . ' GAGAL dibuat ');
+		}
+		return redirect()->to('/taber/payout');
+	}
+
+	public function admin()
+	{
+		$check_admin = $this->tabermodel->getcheckadmin();
+		if ($check_admin) {
+			$transaksi = $this->tabermodel->getadminpayoutrequet();
+			$data = [
+				'title' => 'Admin',
+				'transaksi' => $transaksi
+			];
+			return view('taber/admin', $data);
+		} else {
+			return redirect()->to('/taber');
+		}
+	}
+
+	public function payoutbayar($payout_id)
+	{
+		$check_admin = $this->tabermodel->getcheckadmin();
+		if ($check_admin) {
+			$payout_nominal = $this->tabermodel->getpayoutnominal($payout_id);
+			$this->tabermodel->setsaldo($payout_nominal);
+			$this->tabermodel->setadminbayar($payout_id);
+			return redirect()->to('/taber/admin');
+		} else {
+			return redirect()->to('/taber');
+		}
+	}
+	public function payouttolak($payout_id)
+	{
+		$check_admin = $this->tabermodel->getcheckadmin();
+		if ($check_admin) {
+			$this->tabermodel->setadmintolak($payout_id);
+			return redirect()->to('/taber/admin');
+		} else {
+			return redirect()->to('/taber');
+		}
+	}
 }
