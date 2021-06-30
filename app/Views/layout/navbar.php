@@ -1,21 +1,26 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container " style="border: 5px #a80505">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href=" <?= base_url('/'); ?>">Home</a>
-                    <a class="nav-link" href=" <?= base_url('/taber'); ?> ">Tabungan</a>
-                    <a class="nav-link" href=" <?= base_url('/contact'); ?> ">Contact</a>
-                </div>
-                <?php if (logged_in()) : ?>
+  <a class="navbar-brand ml-1" href="<?= base_url('/'); ?>">Taber</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+    <ul class="navbar-nav  ml-2">
+      <li class="nav-item active">
+        <a class="nav-link" href=" <?= base_url('/'); ?>">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="<?= base_url('/taber'); ?>">Tabungan</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href=" <?= base_url('/contact'); ?> ">Contact</a>
+      </li>
+      <li class="nav-item">
+            <?php if (logged_in()) : ?>
                     <a class="nav-link" href=" <?= base_url('/logout'); ?> ">Logout</a>
                 <?php else : ?>
                     <a class="nav-link" href=" <?= base_url('/login'); ?> ">Login</a>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
+            <?php endif; ?>
+      </li>
+    </ul>
+  </div>
 </nav>
