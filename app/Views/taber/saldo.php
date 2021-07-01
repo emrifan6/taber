@@ -1,7 +1,7 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content'); ?>
-<form method="get" action="/taber">
+<form class="mt-2 ml-2" method="get" action="/taber">
     <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
 <h3>SALDO TABUNGAN</h3>
@@ -26,21 +26,21 @@
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
                             <td><?= $sld['grup1']; ?></td>
-                            <td><?= 'Rp. ' . number_format($sld['saldo_grup1'], 0, ',', '.');; ?></td>
+                            <td><?= 'Rp. ' . number_format($sld['saldo_grup1'], 0, ',', '.'); ?></td>
                         </tr>
                     <?php endif ?>
                     <?php if ($sld['grup2'] != null) : ?>
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
                             <td><?= $sld['grup2']; ?></td>
-                            <td><?= 'Rp. ' . number_format($sld['saldo_grup2'], 0, ',', '.');; ?></td>
+                            <td><?= 'Rp. ' . number_format($sld['saldo_grup2'], 0, ',', '.'); ?></td>
                         </tr>
                     <?php endif ?>
                     <?php if ($sld['grup3'] != null) : ?>
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
                             <td><?= $sld['grup3']; ?></td>
-                            <td><?= 'Rp. ' . number_format($sld['saldo_grup3'], 0, ',', '.');; ?></td>
+                            <td><?= 'Rp. ' . number_format($sld['saldo_grup3'], 0, ',', '.'); ?></td>
                         </tr>
                     <?php endif ?>
                 </tbody>

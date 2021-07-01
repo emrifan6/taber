@@ -1,7 +1,7 @@
 <?= $this->extend('layout/template'); ?>
 
 <?= $this->section('content'); ?>
-<form method="get" action="/taber/grup">
+<form class="mt-2 ml-2" method="get" action="/taber/grup">
     <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
 <div class="row">
@@ -30,13 +30,13 @@
                     <div class="form-group row">
                         <label for="staticEmail" class="col col-form-label">Target Tabungan</label>
                         <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . $datagrup['target_tabungan'] ?>">
+                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . number_format($datagrup['target_tabungan'], 0, ',', '.'); ?>">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="staticEmail" class="col col-form-label">Setoran Menabung</label>
                         <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . $datagrup['jumlah_setoran'] ?>">
+                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . number_format($datagrup['jumlah_setoran'], 0, ',', '.'); ?>">
                         </div>
                     </div>
                 </div>
@@ -101,26 +101,52 @@
 
 
 
-<div>
-    <table class="table w-25">
-        <thead>
-            <tr>
-                <th scope="col">No</th>
-                <th scope="col">Nama</th>
-                <th scope="col">Saldo</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php $i = 1; ?>
-            <?php foreach ($saldoanggota as $k) : ?>
-                <tr>
-                    <th scope="row"><?= $i++; ?></th>
-                    <td><?= $k['username']; ?></td>
-                    <td><?= 'Rp. ' . $k['saldoingrup']; ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+
+<!-- AWAL PROGRES TABUNGAN ANGGOTA -->
+<div class="page-content page-container" id="page-content">
+    <div class="padding">
+        <div class="row container d-flex justify-content-center">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Progres Tabungan Anggota</h4>
+                        <!-- <p class="card-description"> Basic stripped table example </p> -->
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th> No </th>
+                                        <th> Nama</th>
+                                        <th> Progres </th>
+                                        <th> Saldo </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <?php $i = 1; ?>
+                                <?php foreach ($saldoanggota as $k) : ?>
+                                    <tr>
+                                        <th scope="row"><?= $i++; ?></th>
+                                        <td><?= $k['username']; ?></td>
+                                        <td>
+                                        <?php 
+                                        $progres = ($k['saldoingrup']/ $datagrup['target_tabungan'])*100;
+                                        ?>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $progres; ?>%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><?= $progres; ?>%</div>
+                                            </div>
+                                        </td>
+                                        <td><?= 'Rp. ' . number_format($k['saldoingrup'], 0, ',', '.'); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+<!-- AKHIR PROGRES TABUNGAN ANGGOTA -->
 
 <?= $this->endSection('content'); ?>

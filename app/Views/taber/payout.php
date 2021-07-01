@@ -6,7 +6,7 @@
         <?= session()->getFlashdata('pesan'); ?>
     </div>
 <?php endif ?>
-<form method="get" action="/taber">
+<form class="mt-2 ml-2" method="get" action="/taber">
     <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
 <div class="container mt-4">

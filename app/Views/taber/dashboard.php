@@ -7,6 +7,7 @@
     </div>
 <?php endif ?>
 <div class="container mt-4">
+<!-- AWAL MENU -->
     <div class="container">
         <div class="card-deck row">
 
@@ -54,6 +55,7 @@
 
         </div>  
     </div>
+    <!-- AKHIR MENU -->
 
     <div class="row">
         <!-- AWAL CEK PERMINTAAN GABUNG GRUP -->
@@ -93,7 +95,7 @@
     </div>
 
     <!-- AWAL CEK TAGIHAN -->
-    <div class="row">
+    <div class="row mt-4">
         <?php if (!empty($tagihan)) : ?>
             <?php $join_req = json_decode(json_encode($tagihan), true); ?>
             <h3>DAFTAR TAGIHAN</h3>
@@ -112,7 +114,7 @@
                         <?php foreach ($tagihan as $t) : ?>
                             <tr>
                                 <th scope="row"><?= $i++; ?></th>
-                                <td><?= abs($t['tagihan']); ?></td>
+                                <td><?= 'Rp. ' . number_format(abs($t['tagihan']), 0, ',', '.'); ?></td>
                                 <td><?= $t['nama_grup']; ?></td>
                                 <td>
                                     <a href="/taber/bayar/<?= abs($t['tagihan']) . '/' . $t['id_grup']; ?>" class="btn btn-success">BAYAR</a>
@@ -148,7 +150,7 @@
                         <?php foreach ($transaksi as $r) : ?>
                             <tr>
                                 <th scope="row"><?= $i++; ?></th>
-                                <td><?= $r['gross_amount']; ?></td>
+                                <td class="text-nowrap"  ><?= 'Rp. ' . number_format($r['gross_amount'], 0, ',', '.'); ?></td>
                                 <td><?= $r['id_grup']; ?></td>
                                 <td><?= $r['transaction_status']; ?></td>
                                 <td><?= strtoupper($r['bank']); ?></td>
