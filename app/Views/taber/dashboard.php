@@ -152,7 +152,7 @@
                                 <th scope="row"><?= $i++; ?></th>
                                 <td class="text-nowrap"  ><?= 'Rp. ' . number_format($r['gross_amount'], 0, ',', '.'); ?></td>
                                 <td><?= $r['id_grup']; ?></td>
-                                <td><?= $r['transaction_status']; ?></td>
+                                <td class="text-uppercase" ><?= $r['transaction_status']; ?></td>
                                 <td><?= strtoupper($r['bank']); ?></td>
                                 <td><?= $r['va_number']; ?></td>
                                 <td><?= $r['payment_type']; ?></td>

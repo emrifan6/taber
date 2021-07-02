@@ -10,6 +10,7 @@
     <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
 <div class="container mt-4">
+<h3 class="text-center" >TARIK TABUNGAN</h3>
     <form action="/taber/payout/request" method="post" enctype="multipart/form-data">
         <?= csrf_field(); ?>
 
@@ -43,7 +44,7 @@
             </div>
         </div>
 
-        <div class="form-groupt row">
+        <div class="form-groupt row justify-content-center">
             <div class="col-sl-10">
                 <button type="submit" class="btn btn-primary">Kirim</button>
             </div>
@@ -72,8 +73,8 @@
                     <?php foreach ($transaksi as $r) : ?>
                         <tr>
                             <th scope="row"><?= $i++; ?></th>
-                            <td><?= $r['status']; ?></td>
-                            <td><?= $r['nominal']; ?></td>
+                            <td class="text-uppercase" ><?= $r['status']; ?></td>
+                            <td class="text-nowrap"><?= 'Rp. ' . number_format($r['nominal'], 0, ',', '.'); ?></td>
                             <td><?= $r['bank_code']; ?></td>
                             <td><?= $r['rekening']; ?></td>
                             <td><?= $r['nama']; ?></td>

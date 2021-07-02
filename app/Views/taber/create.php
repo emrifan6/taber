@@ -46,7 +46,7 @@
         </div>
 
 
-        <div class="form-groupt row">
+        <div class="form-groupt row justify-content-center mb-4 mt-2">
             <div class="col-sl-10">
                 <button type="submit" class="btn btn-primary">Tambah Data</button>
             </div>

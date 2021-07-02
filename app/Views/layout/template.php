@@ -17,6 +17,9 @@
     </script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
+    <!-- font awesome -->
+    <script src="https://kit.fontawesome.com/18768d8ba0.js" crossorigin="anonymous"></script>
+    
     <title> <?= $title; ?></title>
 
 </head>

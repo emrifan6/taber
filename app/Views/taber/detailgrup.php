@@ -4,100 +4,80 @@
 <form class="mt-2 ml-2" method="get" action="/taber/grup">
     <button type="submit" class="btn btn-info"> Kembali </button>
 </form>
-<div class="row">
-    <div class="col">
-        <form>
-            <div class="row">
-                <div class="col-sm">
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Tabungan</label>
-                        <div class="col-sm-5">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['nama_grup'] ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Tujuan</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['tujuan'] ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Anggota</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= count($saldoanggota) . ' Anggota' ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Target Tabungan</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . number_format($datagrup['target_tabungan'], 0, ',', '.'); ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Setoran Menabung</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= 'Rp. ' . number_format($datagrup['jumlah_setoran'], 0, ',', '.'); ?>">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm">
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Periode menabung</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['periode_setoran'] . ' Hari Sekali' ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Jangka Waktu</label>
-                        <div class="col">
-                            <?php
-                            $cicilan = $datagrup['jangka_waktu'] / $datagrup['periode_setoran'];
-                            ?>
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $cicilan . 'X (' . $datagrup['jangka_waktu'] . ' Hari)' ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Awal Menabung</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['awal_menabung'] ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Akhir Menabung</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['akhir_menabung'] ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Progres Tabungan Grup</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $progresgrup * 100 . '%' ?>">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Kode Grup</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $datagrup['kode_grup'] ?>">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="staticEmail" class="col col-form-label">Ketua Grup</label>
-                        <div class="col">
-                            <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="<?= $namaketua['username'] ?>">
+
+<div class="row mt-2 mb-2">
+    <div class="col-sm-12">
+        <div class="panel panel-primary">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <table id="tabel_tagihan" class="table table-hover" cellspacing="0" width="100%">
+                            <tbody>
+                                <tr>
+                                    <td>Nama Grup</td>
+                                    <td>: <b><?= $datagrup['nama_grup']; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Tujuan Grup</td>
+                                    <td>: <b><?= $datagrup['tujuan']; ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Anggota</td>
+                                    <td>: <b><?= count($saldoanggota); ?></b> </td>
+                                </tr>
+                                <tr>
+                                    <td>Target Tabungan</td>
+                                    <td>: <b><?= 'Rp. ' . number_format($datagrup['target_tabungan'], 0, ',', '.'); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Setoran Menabung</td>
+                                    <td>: <b><?= 'Rp. ' . number_format($datagrup['jumlah_setoran'], 0, ',', '.'); ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Periode Menabung</td>
+                                    <?php
+                                    $cicilan = $datagrup['jangka_waktu'] / $datagrup['periode_setoran'];
+                                    ?>
+                                    <td>: <b><?= $cicilan . 'X (' . $datagrup['jangka_waktu'] . ' Hari)' ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Awal Menabung</td>
+                                    <td>: <b><?= $datagrup['awal_menabung'] ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Akhir Menabung</td>
+                                    <td>: <b><?= $datagrup['awal_menabung'] ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Awal Menabung</td>
+                                    <td>: <b><?= $datagrup['akhir_menabung'] ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Progres Tabungan</td>
+                                    <td>: <b><?= $progresgrup * 100 . '%' ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Kode Grup</td>
+                                    <td>: <b><?= $datagrup['kode_grup'] ?></b></td>
+                                </tr>
+                                <tr>
+                                    <td>Ketua Grup</td>
+                                    <td>: <b><?= $namaketua['username'] ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="col col-lg-3">
+                            <form method="POST" action="/taber/keluargrup">
+                                <button type="submit" class="btn btn-danger" name="id_grup" id="id_grup" value='<?= $datagrup['id'] ?>' onclick="return confirm('Apakah Anda Yakin Keluar dari Anggota grup <?= $datagrup['nama_grup'] ?>')"> KELUAR DARI ANGGOTA GRUP </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
-    <div class="col col-lg-3">
-        <form method="POST" action="/taber/keluargrup">
-            <button type="submit" class="btn btn-danger" name="id_grup" id="id_grup" value='<?= $datagrup['id'] ?>' onclick="return confirm('Apakah Anda Yakin Keluar dari Anggota grup <?= $datagrup['nama_grup'] ?>')"> KELUAR DARI ANGGOTA GRUP </button>
-        </form>
+        </div>
     </div>
 </div>
+
 
 
 
@@ -122,22 +102,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                <?php $i = 1; ?>
-                                <?php foreach ($saldoanggota as $k) : ?>
-                                    <tr>
-                                        <th scope="row"><?= $i++; ?></th>
-                                        <td><?= $k['username']; ?></td>
-                                        <td>
-                                        <?php 
-                                        $progres = ($k['saldoingrup']/ $datagrup['target_tabungan'])*100;
-                                        ?>
-                                            <div class="progress">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $progres; ?>%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><?= $progres; ?>%</div>
-                                            </div>
-                                        </td>
-                                        <td><?= 'Rp. ' . number_format($k['saldoingrup'], 0, ',', '.'); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                    <?php $i = 1; ?>
+                                    <?php foreach ($saldoanggota as $k) : ?>
+                                        <tr>
+                                            <th scope="row"><?= $i++; ?></th>
+                                            <td><?= $k['username']; ?></td>
+                                            <td>
+                                                <?php
+                                                $progres = ($k['saldoingrup'] / $datagrup['target_tabungan']) * 100;
+                                                ?>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="color :black; width: <?= $progres; ?>%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><?= $progres; ?>%</div>
+                                                </div>
+                                            </td>
+                                            <td><?= 'Rp. ' . number_format($k['saldoingrup'], 0, ',', '.'); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
