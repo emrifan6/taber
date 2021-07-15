@@ -22,8 +22,22 @@ class Taber extends BaseController
 	public function __construct()
 	{
 		$this->tabermodel  = new TaberModel();
+		$this->email = \Config\Services::email();
 	}
 
+	// FUNGSI KIRIM EMAIL
+	public function sendEmail($to, $title, $message)
+	{
+		$this->email->setFrom('emrifan20@gmail.com', 'Tabungan-Bersama');
+		$this->email->setTo($to);
+		$this->email->setSubject($title);
+		$this->email->setMessage($message);
+		if (!$this->email->send()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	public function index()
 	{
@@ -388,36 +402,34 @@ class Taber extends BaseController
 		} else {
 			// cek kode grup apakah terdaftar di database
 			$kodegrup = $this->request->getVar('kodegrup');
-			$db = \Config\Database::connect();
-			$sql = 'SELECT id,kode_grup FROM groups WHERE kode_grup = ?';
-			$cekgrup = $db->query($sql, [$kodegrup]);
-			$idtmp = $cekgrup->getRow('id');
-			if ($cekgrup->getNumRows() <= 0) {
+			$idtmp = $this->tabermodel->cek_kodegrup($kodegrup);
+			$status = "";
+			$ketuagrup = "";
+			$emailketuagrup = "";
+			if ($idtmp == null) {
+				// dd("jalan");
+				session()->setFlashdata('pesan', 'Kode grup tidak terdaftar');
 				return redirect()->to('/taber/grup');
 			} else {
-				$sql = 'SELECT * FROM joingrup 
-				WHERE id_grup = ? 
-				AND id_user = ?
-				ORDER BY timestamp DESC LIMIT 1';
-				$cekstatus = $db->query($sql, [$idtmp, user_id()]);
-				$status = $cekstatus->getRow('status');
-				if ($status != 'waiting') {
-					$data = [
-						'id' => null,
-						'id_user' => user_id(),
-						'id_grup' => $idtmp,
-						'status' => 'waiting',
-						'timestamp' => null
-					];
-					$query = $db->table('joingrup')->insert($data);
-					session()->setFlashdata('pesan', 'Permintaan gabung GRUP telah terkirim');
-				}
-				if ($status == 'waiting') {
-					session()->setFlashdata('pesan', 'Permintaan gabung GRUP menunggu persetujuan');
-				}
+				$status = $this->tabermodel->set_waiting_status($idtmp);
+				$dataketuagrup =  $this->tabermodel->get_ketuagrup($idtmp);
+				$ketuagrup = $dataketuagrup['username'];
+				$emailketuagrup = $dataketuagrup['email'];
+				$namagrup = $this->tabermodel->getgrname($idtmp);
+				$username = $this->tabermodel->getusername();
+				// KIRIM EMAIL KE KETUA GRUP
+				// dd($emailketuagrup);
+				$title = 'PERMINTAAN GABUNG GRUP MENABUNG';
+				$message = 'TABER "TABUNGAN BERSAMA", ANDA MEMILIKI PERMINTAAN GABUNG DARI ' . $username . ' KE DALAM GRUP MENABUNG ' . $namagrup;
+				// dd($message);
+				$this->sendEmail($emailketuagrup, $title, $message);
+				session()->setFlashdata('pesan', 'Permintaan gabung GRUP telah terkirim');
 			}
-			return redirect()->to('/taber/grup');
+			if ($status == 'waiting') {
+				session()->setFlashdata('pesan', 'Permintaan gabung GRUP menunggu persetujuan');
+			}
 		}
+		return redirect()->to('/taber/grup');
 	}
 
 	public function terima($id)
@@ -520,6 +532,8 @@ class Taber extends BaseController
 
 	public function payout()
 	{
+		// dd(user()->email);
+		// dd(user());
 		// $this->tabermodel->nominalpending();
 		$bank = $this->tabermodel->getbanklist();
 		$saldo = $this->tabermodel->getsaldo();
@@ -543,12 +557,26 @@ class Taber extends BaseController
 		$bank_name = $this->request->getVar('bank_name');
 		$rekening = $this->request->getVar('nomor_rekening');
 		$nama = $this->request->getVar('nama_pemilik_rekening');
+		// $message = 'Anda memiliki permintaan penarikan saldo dari user ' . user()->username
+		// 	. " dengan rincian berikut : \nNominal :" . 'Rp. ' . number_format($nominal, 0, ',', '.')
+		// 	. "\nBank : " . $bank_name
+		// 	. "\nRekening : " . $rekening
+		// 	. "\nNama : " . $nama;
+		// dd($message);
 		// dd($this->tabermodel->getbankcode($bank_name));
 		// dd($nominal, $bank_name, $rekening, $nama);
 		$check_nomial = $this->tabermodel->getchecknomialpayout($nominal);
 		// dd($check_nomial);
 		if ($check_nomial) {
 			$this->tabermodel->setpayouttransactions($nominal, $bank_name, $rekening, $nama);
+			$emailAdmin = 'muhrifan20@gmail.com';
+			$title = 'PERMINTAAN TARIK UANG, TABUNGAN-BERSAMA';
+			$message = 'Anda memiliki permintaan penarikan saldo dari user ' . user()->username
+				. " dengan rincian berikut : \nNominal : " . 'Rp. ' . number_format($nominal, 0, ',', '.')
+				. "\nBank : " . $bank_name
+				. "\nRekening : " . $rekening
+				. "\nNama : " . $nama;
+			$this->sendEmail($emailAdmin, $title, $message);
 			session()->setFlashdata('pesan', 'Permintaan tarik tabungan sebesar Rp. ' . $nominal . ' berhasil dibuat');
 		} else {
 			session()->setFlashdata('pesan', 'Permintaan tarik tabungan sebesar Rp. ' . $nominal . ' GAGAL dibuat ');

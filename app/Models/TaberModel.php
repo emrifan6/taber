@@ -29,6 +29,19 @@ class TaberModel extends Model
         }
     }
 
+
+    public function getusername()
+    {
+        $db = \Config\Database::connect();
+        $sql = "SELECT username FROM users WHERE id = ?";
+        $query = $db->query($sql, [user_id()]);
+        if ($query->getNumRows() > 0) {
+            return $query->getRow('username');
+        } else {
+            return null;
+        }
+    }
+
     public function getgrcount($id_user)
     {
         // cek sisa kuota grup
@@ -77,6 +90,52 @@ class TaberModel extends Model
         $query = $query->getRow('id_grup');
         // dd($query);
         return $query;
+    }
+
+    public function cek_kodegrup($kode_grup)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'SELECT id,kode_grup FROM groups WHERE kode_grup = ?';
+        $cekgrup = $db->query($sql, [$kode_grup]);
+        $idtmp = $cekgrup->getRow('id');
+        return $idtmp;
+    }
+
+    public function set_waiting_status($idtmp)
+    {
+        $db = \Config\Database::connect();
+        $sql = 'SELECT * FROM joingrup 
+				WHERE id_grup = ? 
+				AND id_user = ?
+				ORDER BY timestamp DESC LIMIT 1';
+        $cekstatus = $db->query($sql, [$idtmp, user_id()]);
+        $status = $cekstatus->getRow('status');
+        if ($status != 'waiting') {
+            $data = [
+                'id' => null,
+                'id_user' => user_id(),
+                'id_grup' => $idtmp,
+                'status' => 'waiting',
+                'timestamp' => null
+            ];
+            $query = $db->table('joingrup')->insert($data);
+            return null;
+        } else {
+            return $status;
+        }
+    }
+
+    public function get_ketuagrup($kode_grup)
+    {
+        $db = \Config\Database::connect();
+        $sqlidketuagrup = 'SELECT id_ketua FROM groups 
+				WHERE id = ? LIMIT 1';
+        $querygetketua = $db->query($sqlidketuagrup, [$kode_grup]);
+        $idketuagrup = $querygetketua->getRow('id_ketua');
+        $sqlketuagrup = 'SELECT email, username FROM users 
+				WHERE id = ? LIMIT 1';
+        $ketuagrup = $db->query($sqlketuagrup, [$idketuagrup]);
+        return $ketuagrup->getRowArray();
     }
 
     public function getstatus_code($order_id)
