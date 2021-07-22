@@ -52,6 +52,9 @@ $routes->get('/taber/tolak/(:segment)', 'Taber::tolak/$1');
 $routes->get('/taber/bayar/(:num)/(:num)', 'snap::index/$1/$2');
 $routes->get('/taber/grup/join/(:any)', 'Taber::join/$1');
 $routes->get('/taber/grup/(:any)', 'Taber::detailgrup/$1');
+
+// $routes->get('/afterpayment', 'AfterPayment::index');
+$routes->resource('AfterPayment');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

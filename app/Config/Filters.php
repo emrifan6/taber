@@ -22,6 +22,7 @@ class Filters extends BaseConfig
 		'login'      => \Myth\Auth\Filters\LoginFilter::class,
 		'role'       => \Myth\Auth\Filters\RoleFilter::class,
 		'permission' => \Myth\Auth\Filters\PermissionFilter::class,
+		'cors'     => \App\Filters\Cors::class,
 	];
 
 	/**
@@ -32,6 +33,7 @@ class Filters extends BaseConfig
 	 */
 	public $globals = [
 		'before' => [
+			'cors',
 			'honeypot',
 			// 'login'
 			// 'csrf',
